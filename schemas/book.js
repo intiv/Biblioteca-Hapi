@@ -9,7 +9,8 @@ var BookSchema = new mongoose.Schema({
   descripcion : String,
   keywords : [String],
   copias_total : Number,
-  copias_disponible : Number
+  copias_disponible : Number,
+  prestado: Number
 });
 
 module.exports = mongoose.model('book', BookSchema);
