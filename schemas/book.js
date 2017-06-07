@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var StudentSchema = new mongoose.Schema({
+var BookSchema = new mongoose.Schema({
   titulo : String,
   genero : String,
   autor : String,
@@ -12,4 +12,4 @@ var StudentSchema = new mongoose.Schema({
   copias_disponible : Number
 });
 
-module.exports = mongoose.model('Student', StudentSchema);
+module.exports = mongoose.model('book', BookSchema);
