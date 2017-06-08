@@ -201,3 +201,9 @@ exports.getBookKey = {
       });
   }
 }
+
+exports.modifyBook = {
+  handler: function(request, reply){
+    
+  }
+}

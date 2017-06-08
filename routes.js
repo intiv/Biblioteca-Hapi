@@ -37,6 +37,12 @@ exports.endpoints = [
 			path: '/books/borrowed',
 			config: booksController.getBookPrestado
  	},
+ 	{	
+ 			method: 'PUT',
+ 			path: '/books/update/{id}',
+ 			config: booksController.modifyBook
+
+ 	},
 	{
 			method: 'PUT',
 			path: '/books/borrowbook/{id}',
