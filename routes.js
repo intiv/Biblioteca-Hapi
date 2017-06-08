@@ -1,16 +1,17 @@
 var booksController = require('./controllers/booksController');
 
 exports.endpoints = [
-	{
+	/*{
 			method: 'POST',
 		 	path: '/books',
-		 	config: booksController.createBooks
- 	},
+		 	config: booksController.createBook
+ 	},*/
 	{
 			method: 'GET',
 		 	path: '/books',
 		 	config: booksController.getBooks
  	},
+ 	/*
 	{
 			method: 'GET',
 			path: '/books/serchbyid/{id}',
@@ -45,7 +46,7 @@ exports.endpoints = [
 			method: 'PUT',
 			path: '/books/borrowbook/{prestado}',
 			config: booksController.putBookPrestado
- 	},
+ 	},*/
 	{
 			method: 'DELETE',
 			path: '/books/delete/{id}',

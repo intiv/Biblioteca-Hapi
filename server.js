@@ -14,7 +14,7 @@ server.connection({
     }
 });
 
-mongoose.connect('mongodb://admin:admin@ds111262.mlab.com:11262/prueba');
+mongoose.connect('mongodb://localhost:27017/prueba');
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error'));

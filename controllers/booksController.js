@@ -29,15 +29,15 @@ exports.createBook = {
 
 exports.deleteBook = {
   handler: function(request, reply){
-    book.remove({_id : request.params._id}, function(err, result){
+    book.findOne({'_id' : request.params.id}, function(err, Book){
       if(err){
-        return reply(boom.wrap(err, 'Delete failed'));
-      }
-      if(result.n === 0){
+        return reply(boom.badRequest("Could not delete book"));
+      }else if(!err && Book){
+        Book.remove();
+        return reply('Book deleted succesfully');
+      }else if(!err){
         return reply(boom.notFound());
-      }else{
-        return reply().code(204);
       }
-    })
+    });
   }
 }
