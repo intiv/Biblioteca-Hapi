@@ -27,11 +27,11 @@ exports.endpoints = [
 			path: '/books/searchbyauthor/{autor}',
 			config: booksController.getBookAuthor
  	},
-	// {
-	// 		method: 'GET',
-	// 		path: '/books/searchbykey/{keywords}', //FALTA HACER EJEMPLO POSTMAN
-	// 		config: booksController.getBookKey
- // 	},
+	{
+			method: 'GET',
+			path: '/books/searchbykey/{keywords}', //FALTA HACER EJEMPLO POSTMAN
+			config: booksController.getBookKey
+ 	},
 	{
 			method: 'GET',
 			path: '/books/borrowed',

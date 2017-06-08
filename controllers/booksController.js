@@ -174,3 +174,30 @@ exports.deleteBook = {
     });
   }
 }
+
+exports.getBookKey = {
+  handler : function(request, reply){
+    var array=request.params.keywords.split("_");
+
+    book.find({},function(err, books){
+      var booksToReturn = [];
+      var added=false;
+      for (var i = 0; i < books.length; i++) {
+        for(var j = 0; j < array.length; j++){
+          if(books[i].keywords.includes(array[j]) && !added){
+            added=true;
+            console.log('Hola',books[i].titulo);
+            booksToReturn.push(books[i]);
+          }
+        }
+        added=false;
+      }
+      if(booksToReturn.length >0){
+        return reply(booksToReturn);
+      }else{
+        return reply('No books found');
+      }
+      return reply('Error in get by keywords');
+      });
+  }
+}
