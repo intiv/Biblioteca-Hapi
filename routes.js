@@ -6,12 +6,12 @@ exports.endpoints = [
 		 	path: '/books',
 		 	config: booksController.getBooks
  	},
- 	
+
 	{
 			method: 'GET',
 			path: '/books/searchbyid/{id}',
 			config: booksController.getBookId
- 	},/*
+ 	},
 	{
 			method: 'GET',
 			path: '/books/searchbyname/{titulo}',
@@ -41,7 +41,7 @@ exports.endpoints = [
 			method: 'PUT',
 			path: '/books/borrowbook/{id}',
 			config: booksController.putBookPrestado
- 	},*/
+ 	},/*------------------------------------------------------------*/
 	{
 			method: 'DELETE',
 			path: '/books/delete/{id}',

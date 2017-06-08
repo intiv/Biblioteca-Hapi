@@ -24,6 +24,96 @@ exports.getBookId = {
   }
 }
 
+//Get one book by its name
+exports.getBookName = {
+  handler : function(request, reply){
+    book.find({'titulo' : request.params.titulo}, function(err, Books){
+      if(!err && Books){
+        return reply(Books);
+      }else if(!err){
+        return reply(boom.notFound());
+      }else if(err){
+        return reply(boom.wrap(err, 'Books not found'));
+      }
+    });
+  }
+}
+
+//Get one book by its name
+exports.getBookName = {
+  handler : function(request, reply){
+    book.find({'titulo' : request.params.titulo}, function(err, Books){
+      if(!err && Books){
+        return reply(Books);
+      }else if(!err){
+        return reply(boom.notFound());
+      }else if(err){
+        return reply(boom.wrap(err, 'Books not found'));
+      }
+    });
+  }
+}
+
+//Get one book by its genere
+exports.getBookGenre = {
+  handler : function(request, reply){
+    book.find({'genero' : request.params.genero}, function(err, Books){
+      if(!err && Books){
+        return reply(Books);
+      }else if(!err){
+        return reply(boom.notFound());
+      }else if(err){
+        return reply(boom.wrap(err, 'Books not found'));
+      }
+    });
+  }
+}
+
+//Get one book by its Author
+exports.getBookAuthor = {
+  handler : function(request, reply){
+    book.find({'autor' : request.params.autor}, function(err, Books){
+      if(!err && Books){
+        return reply(Books);
+      }else if(!err){
+        return reply(boom.notFound());
+      }else if(err){
+        return reply(boom.wrap(err, 'Books not found'));
+      }
+    });
+  }
+}
+
+// get libros Prestados
+exports.getBookPrestado = {
+  handler : function(request, reply){
+    book.find({'prestado' : 1}, function(err, Books){
+      if(!err && Books){
+        return reply(Books);
+      }else if(!err){
+        return reply(boom.notFound());
+      }else if(err){
+        return reply(boom.wrap(err, 'Books not found'));
+      }
+    });
+  }
+}
+
+// prestar
+// exports.putBookPrestado = {
+//   handler : function(request, reply){
+//     book.find({'_id' : request.params.id}, function(err, Book){
+//       if(!err && Book){
+//         return reply(Book);
+//       }else if(!err){
+//         return reply(boom.notFound());
+//       }else if(err){
+//         return reply(boom.wrap(err, 'Book not found'));
+//       }
+//     });
+//   }
+// }
+
 //Create a new book
 exports.createBook = {
   handler: function(request, reply){
