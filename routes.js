@@ -1,50 +1,45 @@
 var booksController = require('./controllers/booksController');
 
 exports.endpoints = [
-	/*{
-			method: 'POST',
-		 	path: '/books',
-		 	config: booksController.createBook
- 	},*/
 	{
 			method: 'GET',
 		 	path: '/books',
 		 	config: booksController.getBooks
  	},
- 	/*
+ 	
 	{
 			method: 'GET',
-			path: '/books/serchbyid/{id}',
+			path: '/books/searchbyid/{id}',
 			config: booksController.getBookId
- 	},
+ 	},/*
 	{
 			method: 'GET',
-			path: '/books/serchbyname/{titulo}',
+			path: '/books/searchbyname/{titulo}',
 			config: booksController.getBookName
  	},
 	{
 			method: 'GET',
-			path: '/books/serchbygenre/{genero}',
+			path: '/books/searchbygenre/{genero}',
 			config: booksController.getBookGenre
  	},
 	{
 			method: 'GET',
-			path: '/books/serchbyauthor/{autor}',
+			path: '/books/searchbyauthor/{autor}',
 			config: booksController.getBookAuthor
  	},
 	{
 			method: 'GET',
-			path: '/books/serchbykey/{keywords}',
+			path: '/books/searchbykey/{keywords}', //FALTA HACER EJEMPLO POSTMAN
 			config: booksController.getBookKey
  	},
 	{
 			method: 'GET',
-			path: '/books/borrowed/{prestado}',
+			path: '/books/borrowed',
 			config: booksController.getBookPrestado
  	},
 	{
 			method: 'PUT',
-			path: '/books/borrowbook/{prestado}',
+			path: '/books/borrowbook/{id}',
 			config: booksController.putBookPrestado
  	},*/
 	{

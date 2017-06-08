@@ -1,6 +1,7 @@
 var book = require('../schemas/book');
 var mongoose = require('mongoose');
 
+//Get all books
 exports.getBooks = {
   handler: function(request, reply){
     var books = book.find({});
@@ -8,6 +9,22 @@ exports.getBooks = {
   }
 }
 
+//Get one book by its id
+exports.getBookId = {
+  handler : function(request, reply){
+    book.findOne({'_id' : request.params.id}, function(err, Book){
+      if(!err && Book){
+        return reply(Book);
+      }else if(!err){
+        return reply(boom.notFound());
+      }else if(err){
+        return reply(boom.wrap(err, 'Book not found'));
+      }
+    });
+  }
+}
+
+//Create a new book
 exports.createBook = {
   handler: function(request, reply){
     var newBook = new book({
@@ -19,7 +36,8 @@ exports.createBook = {
       descripcion : request.payload.descripcion,
       keywords : request.payload.keywords,
       copias_total : request.payload.copias_total,
-      copias_disponible : request.payload.copias_disponible
+      copias_disponible : request.payload.copias_disponible,
+      prestado : 0
     });
     newBook.save();
     console.log('student saved');
@@ -27,6 +45,7 @@ exports.createBook = {
   }
 }
 
+//Delete a book given its id
 exports.deleteBook = {
   handler: function(request, reply){
     book.findOne({'_id' : request.params.id}, function(err, Book){
