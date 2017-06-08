@@ -37,11 +37,11 @@ exports.endpoints = [
 			path: '/books/borrowed',
 			config: booksController.getBookPrestado
  	},
-	/*{
+	{
 			method: 'PUT',
 			path: '/books/borrowbook/{id}',
 			config: booksController.putBookPrestado
- 	},------------------------------------------------------------*/
+ 	},
 	{
 			method: 'DELETE',
 			path: '/books/delete/{id}',

@@ -99,20 +99,44 @@ exports.getBookPrestado = {
   }
 }
 
-// prestar
-// exports.putBookPrestado = {
-//   handler : function(request, reply){
-//     book.find({'_id' : request.params.id}, function(err, Book){
-//       if(!err && Book){
-//         return reply(Book);
-//       }else if(!err){
-//         return reply(boom.notFound());
-//       }else if(err){
-//         return reply(boom.wrap(err, 'Book not found'));
-//       }
-//     });
-//   }
-// }
+//prestar
+exports.putBookPrestado = {
+  handler: function(request, reply){
+      book.findOne({'_id' : request.params.id}, function(err, Book){
+        if(!err && Book){
+          var copias = Book.copias_disponible -1;
+          book.update(
+            {'_id': request.params.id},
+            {$set:
+              {
+                copias_disponible: copias,
+                prestado: 1
+              }
+            }, function(err){
+              if(err){
+                return reply(boom.wrap(err, 'Book not found'));
+              }else{
+                return reply('updated succesfully');
+              }
+            }
+          );
+        }else if(!err){
+          return reply(boom.notFound());
+        }else if(err){
+          return reply(boom.wrap(err, 'Book not found'));
+        }
+      });
+      // if(!err && Book){
+      //   Book.update();
+      //   console.log('student saved');
+      //   return reply('ok');
+      // }else if(!err){
+      //   return reply(boom.notFound());
+      // }else if(err){
+      //   return reply(boom.wrap(err, 'Book not found'));
+      // }
+  }
+}
 
 //Create a new book
 exports.createBook = {
