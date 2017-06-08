@@ -138,6 +138,32 @@ exports.putBookPrestado = {
   }
 }
 
+//modificar libros
+exports.modifyBook = {
+  handler: function(request, reply){
+    book.update(
+      {'_id': request.params.id},
+      {$set:
+        {
+          titulo : request.payload.titulo,
+          genero : request.payload.genero,
+          autor : request.payload.autor,
+          publicacion : request.payload.publicacion,
+          editorial : request.payload.editorial,
+          descripcion : request.payload.descripcion,
+          keywords : request.payload.keywords
+        }
+      }, function(err){
+        if(err){
+          return reply(boom.wrap(err, 'Book not found'));
+        }else{
+          return reply('updated succesfully');
+        }
+      }
+    );
+  }
+}
+
 //Create a new book
 exports.createBook = {
   handler: function(request, reply){
@@ -204,6 +230,6 @@ exports.getBookKey = {
 
 exports.modifyBook = {
   handler: function(request, reply){
-    
+
   }
 }
