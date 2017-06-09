@@ -126,15 +126,6 @@ exports.putBookPrestado = {
           return reply(boom.wrap(err, 'Book not found'));
         }
       });
-      // if(!err && Book){
-      //   Book.update();
-      //   console.log('student saved');
-      //   return reply('ok');
-      // }else if(!err){
-      //   return reply(boom.notFound());
-      // }else if(err){
-      //   return reply(boom.wrap(err, 'Book not found'));
-      // }
   }
 }
 
@@ -179,9 +170,19 @@ exports.createBook = {
       copias_disponible : request.payload.copias_disponible,
       prestado : 0
     });
-    newBook.save();
-    console.log('student saved');
-    return reply('ok');
+    newBook.save(function(err){
+      if(!err){
+        return reply({
+          success: true
+        });
+      }else{
+        return reply({
+          success: false
+        })      
+      }  
+
+    });
+    
   }
 }
 
@@ -203,8 +204,7 @@ exports.deleteBook = {
 
 exports.getBookKey = {
   handler : function(request, reply){
-    var array=request.params.keywords.split("_");
-
+    var array=request.query.key;
     book.find({},function(err, books){
       var booksToReturn = [];
       var added=false;
@@ -212,7 +212,6 @@ exports.getBookKey = {
         for(var j = 0; j < array.length; j++){
           if(books[i].keywords.includes(array[j]) && !added){
             added=true;
-            console.log('Hola',books[i].titulo);
             booksToReturn.push(books[i]);
           }
         }
@@ -228,8 +227,3 @@ exports.getBookKey = {
   }
 }
 
-exports.modifyBook = {
-  handler: function(request, reply){
-
-  }
-}

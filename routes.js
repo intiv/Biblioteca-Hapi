@@ -2,6 +2,16 @@ var booksController = require('./controllers/booksController');
 
 exports.endpoints = [
 	{
+		method: 'GET',
+		path: '/',
+		config:{
+			handler:function(request, reply){
+				console.log(request.query);
+				return reply('Hola');
+			}
+		}
+	},
+	{
 			method: 'GET',
 		 	path: '/books',
 		 	config: booksController.getBooks
@@ -29,7 +39,7 @@ exports.endpoints = [
  	},
 	{
 			method: 'GET',
-			path: '/books/searchbykey/{keywords}', //FALTA HACER EJEMPLO POSTMAN
+			path: '/books/searchbykey', //FALTA HACER EJEMPLO POSTMAN
 			config: booksController.getBookKey
  	},
 	{
