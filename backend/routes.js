@@ -2,16 +2,6 @@ var booksController = require('./controllers/booksController');
 
 exports.endpoints = [
 	{
-		method: 'GET',
-		path: '/',
-		config:{
-			handler:function(request, reply){
-				console.log(request.query);
-				return reply('Hola');
-			}
-		}
-	},
-	{
 			method: 'GET',
 		 	path: '/books',
 		 	config: booksController.getBooks
