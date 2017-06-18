@@ -1,6 +1,6 @@
 <template>
-	<div id="menuRoot">
-		<table>
+	<div id="menuRoot" >
+		<table >
 			<colgroup>
 				<col style="width:10%">
 				<col style="width:10%">
@@ -11,8 +11,9 @@
 				<col style="width:10%">
 				<col style="width:3%">
 				<col style="width:3%">
-				<col style="width:10%">
-				<col style="width:10%">
+				<col style="width:7%">
+				<col style="width:7%">
+				<col style="width:6%">
 			</colgroup>
 			<thead>
 				<tr>
@@ -26,11 +27,12 @@
 					<th>Copias Totales</th>
 					<th>Copias Disponibles</th>
 					<th v-if="!prestados">Prestar</th>
+					<th v-if="!prestados">Modificar</th>
 					<th v-if="!prestados">Borrar</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="book in books" :key="$route">
+				<tr v-for="book in books">
 					<td>{{book.titulo}}</td>
 					<td>{{book.genero}}</td>
 					<td>{{book.autor}}</td>
@@ -41,7 +43,12 @@
 					<td>{{book.copias_total}}</td>
 					<td>{{book.copias_disponible}}</td>
 					<td v-if="!prestados"><button v-on:click="borrowBook(book._id)">Prestar</button></td>
-					<td v-if="!prestados"><button v-on:click="deleteBook(book._id)">Borrar</button></td>
+					<td v-if="!prestados">
+						<router-link :to="'/books/modify/'+book._id">
+							<button v-on:click="modifyBook(book._id)" class="blackButton">Modificar</button>
+						</router-link>
+					</td>
+					<td v-if="!prestados"><button v-on:click="deleteBook(book._id)">X</button></td>
 				</tr>
 			</tbody>
 		</table>
@@ -52,10 +59,11 @@
 				</router-link>
 			</div>
 			<div class="col l4 push-l2">
-				<button id="show-modal" v-on:click="showModal = true" class="btn">Buscar Libro</button>
+				<button id="show-modal" v-on:click="showModal = true" v-if="buscados===false" class="btn">Buscar Libros</button>
+				<button id="clear-search" v-on:click="clearSearch" class="btn" v-if="buscados===true">Limpiar Busqueda</button>
 			</div>
 		</div>
-		<modal v-if="showModal" @close="showModal = false">
+		<modal v-if="showModal" @close="showModal = false" @searched="setTable">
 			
 		</modal>
 	</div>
@@ -69,7 +77,8 @@
 			return {
 				books: [],
 				prestados: false,
-				showModal: false
+				showModal: false,
+				buscados: false
 			}
 		},
 		methods : {
@@ -80,7 +89,26 @@
 			},
 			borrowBook(id){
 				this.$http.put('http://localhost:8000/books/borrowbook/'+id).then((response)=>{
+					if(response.body.success){
+						swal({
+							title: 'Prestamo exitoso!',
+							text: 'Disfrute su libro',
+							type: 'success'
+						});
+					}else if(response.body.success===false){
+						swal({
+							title: 'Prestamo fallido!',
+							text: 'No se pudo realizar el prestamo',
+							type: 'error'
+						});
+					}
 					this.getBooks();
+				},(response)=>{
+					swal({
+						title: 'Prestamo fallido',
+						text: 'Solo estudiantes pueden tomar libros prestados',
+						type: 'warning'
+					});
 				});
 
 			},
@@ -93,14 +121,17 @@
 				this.$http.get('http://localhost:8000/books/borrowed').then((response)=>{
 					this.books=response.body;
 				});
+			},
+			setTable(payload){
+				this.books=payload;
+				this.showModal = false;
+				this.buscados=true;
+			},
+			clearSearch(){
+				this.buscados=false;
+				this.getBooks();
 			}
 		},
-		
-		/*watch : {
-			this.$route.path : function(val){
-				location.reload();
-			}
-		},*/
 		components : {
 			Modal
 		},
@@ -170,4 +201,7 @@
 		transition: background-color 0.3s ease-in-out;
 	}
 	
+	.blackButton{
+		color: black;
+	}
 </style>

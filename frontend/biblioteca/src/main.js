@@ -6,13 +6,13 @@ import App from './App.vue'
 import Hello from './components/Hello.vue'
 import Tabla from './components/Tabla.vue'
 import Form from './components/Form.vue'
+import Login from './components/Login.vue'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
 
-
-
 Vue.use(VueResource);
 Vue.use(VueRouter);
+Vue.http.options.credentials = true;
 
 const router = new VueRouter({
 	routes : [
@@ -20,17 +20,27 @@ const router = new VueRouter({
 			name: 'Home',
 			path: '/books',
 			component: Tabla,
-			props: {prestados:false}
+			props: {prestados: false}
 		},
 		{
 			name: 'Borrowed',
 			path: '/books/borrowed',
 			component: Tabla,
-			props: {prestados:true}
+			props: {prestados: true}
 		},
 		{
 			name: 'Create',
 			path: '/books/create',
+			component: Form
+		},
+		{
+			name: 'Login',
+			path: '/login',
+			component: Login
+		},
+		{
+			name: 'Modify',
+			path: '/books/modify/:id',
 			component: Form
 		}
 	]

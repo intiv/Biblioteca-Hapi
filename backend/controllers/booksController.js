@@ -1,8 +1,9 @@
 var book = require('../schemas/book');
 var mongoose = require('mongoose');
-
+var boom=require('boom');
 //Get all books
 exports.getBooks = {
+  auth: false,
   handler: function(request, reply){
     var books = book.find({});
     reply(books);
@@ -11,14 +12,19 @@ exports.getBooks = {
 
 //Get one book by its id
 exports.getBookId = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian','student']
+  },
   handler : function(request, reply){
     book.findOne({'_id' : request.params.id}, function(err, Book){
       if(!err && Book){
-        return reply(Book);
+        return reply({libro: Book, success: true});
       }else if(!err){
-        return reply(boom.notFound());
+        return reply({message: 'Libro no encontrado', success: false});
       }else if(err){
-        return reply(boom.wrap(err, 'Book not found'));
+        return reply({message: 'Error obteniendo libro', success:false});
       }
     });
   }
@@ -26,29 +32,19 @@ exports.getBookId = {
 
 //Get one book by its name
 exports.getBookName = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian','student']
+  },
   handler : function(request, reply){
     book.find({'titulo' : request.params.titulo}, function(err, Books){
       if(!err && Books){
-        return reply(Books);
+        return reply({libros: Books, success:true});
       }else if(!err){
-        return reply(boom.notFound());
+        return reply({message: boom.notFound(), success: false});
       }else if(err){
-        return reply(boom.wrap(err, 'Books not found'));
-      }
-    });
-  }
-}
-
-//Get one book by its name
-exports.getBookName = {
-  handler : function(request, reply){
-    book.find({'titulo' : request.params.titulo}, function(err, Books){
-      if(!err && Books){
-        return reply(Books);
-      }else if(!err){
-        return reply(boom.notFound());
-      }else if(err){
-        return reply(boom.wrap(err, 'Books not found'));
+        return reply({message: boom.wrap(err, 'Books not found'), success: false});
       }
     });
   }
@@ -56,14 +52,19 @@ exports.getBookName = {
 
 //Get one book by its genere
 exports.getBookGenre = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian','student']
+  },
   handler : function(request, reply){
-    book.find({'genero' : request.params.genero}, function(err, Books){
+    book.find({genero : request.params.genero}, function(err, Books){
       if(!err && Books){
-        return reply(Books);
+        return reply({libros: Books, success:true});
       }else if(!err){
-        return reply(boom.notFound());
+        return reply({success: false});
       }else if(err){
-        return reply(boom.wrap(err, 'Books not found'));
+        return reply({message: err,success: false});
       }
     });
   }
@@ -71,14 +72,19 @@ exports.getBookGenre = {
 
 //Get one book by its Author
 exports.getBookAuthor = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian','student']
+  },
   handler : function(request, reply){
     book.find({'autor' : request.params.autor}, function(err, Books){
       if(!err && Books){
-        return reply(Books);
+        return reply({libros: Books, success: true});
       }else if(!err){
-        return reply(boom.notFound());
+        return reply({message: 'No se encontro ningun libro para ese autor',success: false});
       }else if(err){
-        return reply(boom.wrap(err, 'Books not found'));
+        return reply({message: err, success: false});
       }
     });
   }
@@ -86,6 +92,11 @@ exports.getBookAuthor = {
 
 // get libros Prestados
 exports.getBookPrestado = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian','student']
+  },
   handler : function(request, reply){
     book.find({'prestado' : 1}, function(err, Books){
       if(!err && Books){
@@ -101,8 +112,13 @@ exports.getBookPrestado = {
 
 //prestar
 exports.putBookPrestado = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['student']
+  },
   handler: function(request, reply){
-      book.findOne({'_id' : request.params.id}, function(err, Book){
+      book.findOne({_id : request.params.id}, function(err, Book){
         if(!err && Book){
           var copias = Book.copias_disponible -1;
           book.update(
@@ -114,16 +130,16 @@ exports.putBookPrestado = {
               }
             }, function(err){
               if(err){
-                return reply(boom.wrap(err, 'Book not found'));
+                return reply({message: boom.wrap(err, 'Book not found'), success: false});
               }else{
-                return reply('updated succesfully');
+                return reply({message: 'Prestado con exito', success: true});
               }
             }
           );
         }else if(!err){
-          return reply(boom.notFound());
+          return reply({message: boom.notFound(), success: false});
         }else if(err){
-          return reply(boom.wrap(err, 'Book not found'));
+          return reply({message: boom.wrap(err, 'Book not found'),success: true});
         }
       });
   }
@@ -131,6 +147,11 @@ exports.putBookPrestado = {
 
 //modificar libros
 exports.modifyBook = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian']
+  },
   handler: function(request, reply){
     book.update(
       {'_id': request.params.id},
@@ -146,9 +167,9 @@ exports.modifyBook = {
         }
       }, function(err){
         if(err){
-          return reply(boom.wrap(err, 'Book not found'));
+          return reply({message:boom.wrap(err, 'Book not found'), success: false});
         }else{
-          return reply('updated succesfully');
+          return reply({success: true, message: 'updated succesfully'});
         }
       }
     );
@@ -157,6 +178,11 @@ exports.modifyBook = {
 
 //Create a new book
 exports.createBook = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian']
+  },
   handler: function(request, reply){
     var newBook = new book({
       titulo : request.payload.titulo,
@@ -188,6 +214,11 @@ exports.createBook = {
 
 //Delete a book given its id
 exports.deleteBook = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian']
+  },
   handler: function(request, reply){
     book.findOne({'_id' : request.params.id}, function(err, Book){
       if(err){
@@ -203,6 +234,11 @@ exports.deleteBook = {
 }
 
 exports.getBookKey = {
+  auth : {
+    mode: 'required',
+    strategy: 'session',
+    scope: ['librarian','student']
+  },
   handler : function(request, reply){
     var array=request.query.key;
     book.find({},function(err, books){
@@ -218,11 +254,11 @@ exports.getBookKey = {
         added=false;
       }
       if(booksToReturn.length >0){
-        return reply(booksToReturn);
+        return reply({libros: booksToReturn, success:true});
       }else{
-        return reply('No books found');
+        return reply({message: 'No books found', success: false});
       }
-      return reply('Error in get by keywords');
+      return reply({success :false});
       });
   }
 }

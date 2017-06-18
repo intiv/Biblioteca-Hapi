@@ -1,11 +1,14 @@
 <template>
   <div id="app">
-  	<div class="container">
+  	<div class="container" v-if="isLogin()===false">
 		<div class="row">
 			<div class="col l12 m12 s12">
 				<nav>
 					<div class="nav-wrapper">
 						<a class="brand-logo center">Biblioteca</a>
+						<ul id="nav-mobile" class="right">
+							<li><button v-on:click="Logout()" class="btn">Logout</button></li>
+						</ul>
 					</div>
 				</nav>
 			</div>
@@ -21,22 +24,7 @@
 						</router-link>
 						</a>
 					</div>
-					<!--
-					<div class="linkContainer" v-bind:class="{current : (isCurrentRoute()===2)}">
-						<a class="waves-effect waves-light" data-target="#modal1">
-							<p>Agregar libro</p>
-						</a>
-						<div id="modal1" class="modal">
-							<div class="modal-content">
-								<h4>Hola</h4>
-								<p>Adios</p>
-							</div>
-							<div class="modal-footer">
-								<a class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-							</div>
-						</div>
-					</div>-->
-					
+				
 					<div class="linkContainer"  v-bind:class="{current : (isCurrentRoute()===3)}">
 						<a>
 							<router-link to="/books/search">
@@ -59,8 +47,11 @@
 			</div>
 		</div>
 	</div>		
-  	
+  	<div v-if="isLogin()===true">
+  		<router-view></router-view>
+  	</div>
   </div>
+
 </template>
 
 <script>
@@ -79,6 +70,18 @@
 	  			case '/books/search': return 3; break;
 	  			case '/books/borrowed': return 4; break;
 	  		}
+	  	},
+	  	isLogin(){
+	  		if(this.$route.path==='/login'){
+	  			return true;
+	  		}else{
+	  			return false;
+	  		}
+	  	},
+	  	Logout(){
+	  		this.$http.put('http://localhost:8000/logout').then((response)=>{
+	  			this.$router.push('/login');
+	  		});
 	  	}
 	  }
 	}
@@ -124,7 +127,7 @@
 	}
 
 	*{
-		font-family: "Roboto";
+		font-family: 'Roboto', sans-serif;
 	}
 	body{
 		
@@ -151,6 +154,15 @@
 		margin-top: 0;
 		margin-bottom: 0;
 	}
+	
+	.btn{
+		background-color: #327A41;
+	}
+
+	.btn:hover{
+		background-color: #006400;
+		transition: background-color 0.3s ease-in-out;
+	}
 
 	.linkContainer{
 		height: 10%;
@@ -167,5 +179,10 @@
 	router-link>p{
 		margin-top: 0;
 		margin-bottom: 0;
+	}
+
+	#nav-mobile{
+		margin-right: 10px;
+		padding-bottom: 10px;
 	}
 </style>

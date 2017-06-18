@@ -63,7 +63,7 @@
 				<button class="btn" v-on:click="createBook">Finalizar</button>
 			</div>
 			<div class="col l6">
-				<button class="btn">Cancelar</button>
+				<button class="btn" v-on:click="$router.push('/books')">Cancelar</button>
 			</div>
 		</div>
 	</div>
@@ -86,18 +86,86 @@
 					copias_disponible: 0,
 					prestado: 0
 				},
-				keywordsRaw : ''
+				keywordsRaw : '',
+				modificar: false,
+				id: ''
+
 
 			}
 		},
 		methods : {
 			createBook(){
-				this.book.keywords = this.keywordsRaw.split(',');
-				this.book.copias_disponible=this.book.copias_total;
-				this.$http.post('http://localhost:8000/books/create',this.book).then((response)=>{
-					alert('Libro creado con exito!');
-				});
+				if(!this.modificar){
+					this.book.keywords = this.keywordsRaw.split(',');
+					this.book.copias_disponible=this.book.copias_total;
+					this.$http.post('http://localhost:8000/books/create',this.book).then((response)=>{
+						swal({
+							title: 'Libro creado con exito!',
+							text: '',
+							type: 'success'
+						});
+						this.$router.push('/books');
+					},(response)=>{
+						swal({
+							title: 'Libro no se creo!',
+							text: 'ocurrio un error creando el libro',
+							type: 'err'
+						});
+						this.$router.push('/books');
+					});
+				}else{
+					this.book.keywords = this.keywordsRaw.split(',');
+					this.book.copias_disponible=this.book.copias_total;
+					this.$http.put('http://localhost:8000/books/update/'+this.id,this.book).then((response)=>{
+						if(response.body.success){
+							swal({
+								title: 'Modificado con exito!',
+								type: 'success'
+							});
+							this.$router.push('/books');
+						}else{
+							swal({
+								title: 'Error',
+								text: 'No se pude modificar',
+								type: 'error'
+							});
+							this.$router.push('/books');
+						}
+					});
+				}
+				
+			},
+			checkRoute(){
+				if(this.$route.path==='/books/create'){
+					return 1;
+				}else if(this.$route.path.substr(0,13)==='/books/modify'){
+					return 2;
+				}else{
+					return 3;
+				}
 			}
+		},
+		beforeMount(){
+			if(this.checkRoute()===2){
+				this.modificar=true;
+				this.id=this.$route.path.substr(14,this.$route.path.length);
+				this.$http.get('http://localhost:8000/books/searchbyid/'+this.id).then((response)=>{
+					if(response.body.success){
+						this.book=response.body.libro;
+						this.keywordsRaw='';
+						for (var i = 0; i <this.book.keywords.length; i++) {
+							this.keywordsRaw+=(this.book.keywords[i]);
+							if(i<this.book.keywords.length-1){
+								this.keywordsRaw+=',';
+							}
+						}
+							
+					}
+				});
+			}else{	
+				this.modificar=false;
+			}
+
 		}
 	}
 </script>
@@ -109,6 +177,7 @@
 
 	#botones{
 		margin-bottom: 1px;
+		margin-left: 13vw;
 	}
 
 	h4{

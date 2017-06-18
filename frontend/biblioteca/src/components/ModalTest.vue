@@ -7,12 +7,22 @@
 	        	<slot name="header">
 	        	<h4>Buscar Libro</h4>
 		        	<div class="row">
-						<div class="col l9 m9 s9">
+						<div class="col l8 m8 s8">
 			            	<input type="text" id="searchID" v-model="identificacion">
 			            	<label for="searchID" class="active">ID</label>
 			          	</div>	
-		          		<div class="col l3 m3 s3">
-		          			<button class="btn" v-on:click="getBook()">Buscar</button>
+		          		<div class="col l4 m4 s4">
+		          			<div class="input-field">
+					          <select v-model="buscar">
+					            <option value="" disabled selected>Elegir opcion</option>
+					            <option value="titulo">Titulo</option>
+					            <option value="id">Id</option>
+					            <option value="genero">Genero</option>
+					            <option value="autor">Autor</option>
+					            <option value="keywords">Key</option>
+					          </select>
+					          
+					        </div>
 		          		</div>
 		          	</div>
 	          	</slot>
@@ -26,9 +36,16 @@
 	        </div>
 	        <div class="modal-footer">
 	            <slot name="footer">
-	            	<button class="modal-default-button" v-on:click="$emit('close')">
-	            		OK
-	              	</button>
+	            	<div class="row">
+		              	<div class="col l4 m4 s4">
+							<button v-on:click="getBook()" class="btn waves-effect waves-light">Buscar</button>
+		              	</div>
+		              	<div class="col l4 m4 s4 offset-l1 offset-m1 offset-s1">
+			            	<button class="modal-default-button btn waves-effect waves-light" v-on:click="$emit('close')">
+			            		Cerrar
+			              	</button>
+		              	</div>
+	              	</div>
 	            </slot>
 	        </div>
         </div>
@@ -47,17 +64,127 @@
 					genero : '',
 					autor : ''
 				},
-				identificacion : ''
+				identificacion : '',
+				buscar : 'id'
 			}
 		},
 		methods : {
 			getBook(){
-				console.log('ID: '+this.identificacion);
-				this.$http.get('http://localhost:8000/books/searchbyid/'+this.identificacion).then((response)=>{
-					console.log('Response: ', response.body);
-					this.book=response.body;
-					console.log(this.book);
-				});
+				switch(this.buscar){
+					case 'id':
+						this.$http.get('http://localhost:8000/books/searchbyid/'+this.identificacion).then((response)=>{
+							if(response.body.success){
+								this.book=response.body.libro;
+								//this.$emit('searched',response.body);
+							}else{
+								swal({
+									title: 'Lo sentimos! :(',
+									text: 'No se encontro ningun libro con esa ID',
+									type: 'error',
+									closeOnConfirm: true
+								});
+							}
+						});
+						break;
+					case 'titulo':
+						this.$http.get('http://localhost:8000/books/searchbyname/'+this.identificacion).then((response)=>{
+							if(response.body.success){
+								if(response.body.libros.length>0){
+									this.$emit('searched',response.body.libros);
+								}else{
+									swal({
+										title: 'Lo sentimos! :(',
+										text: 'No se encontro ningun libro con ese titulo\n'+request.body.message,
+										type: 'error',
+										closeOnConfirm: true
+									});
+								}
+							}else{
+								swal({
+									title: 'Lo sentimos! :(',
+									text: 'No se encontro ningun libro con ese titulo\n'+request.body.message,
+									type: 'error',
+									closeOnConfirm: true
+								});
+							}
+						});
+						break;
+					case 'genero':
+						this.$http.get('http://localhost:8000/books/searchbygenre/'+this.identificacion).then((response)=>{
+							if(response.body.success){
+								if(response.body.libros.length>0){
+									this.$emit('searched',response.body.libros);
+								}else{
+									swal({
+										title: 'Busqueda fallo!',
+										text: 'No se encontro ningun libro',
+										type: 'warning'
+									});
+									this.$emit('close');
+								}
+							}else if(response.body.message){
+								swal({
+									title: 'Lo sentimos! :(',
+									text: response.body.message,
+									type: 'error',
+									closeOnConfirm: true
+								});
+							}else{
+								swal({
+									title: 'Lo sentimos! :(',
+									text: 'No se encontro ningun libro de ese genero',
+									type: 'error',
+									closeOnConfirm: true
+								});
+							}
+						});
+						break;	
+					case 'autor':
+						this.$http.get('http://localhost:8000/books/searchbyauthor/'+this.identificacion).then((response)=>{
+							if(response.body.success){
+								this.$emit('searched',response.body.libros)
+							}else{
+								swal({
+									title: 'Lo sentimos! :(',
+									text: 'No se encontro ningun libro de ese autor',
+									type: 'error',
+									closeOnConfirm: true
+								});
+							}
+						});
+						break;
+					case 'keywords':
+						var keys=this.identificacion.split(',');
+						var query='?'
+						for (var i = 0; i <keys.length; i++) {
+							query+=("key="+keys[0]);	
+						}
+						this.$http.get('http://localhost:8000/books/searchbykey'+query).then((response)=>{
+							if(response.body.success){
+								this.$emit('searched',response.body.libros);
+							}else{
+								swal({
+									title: 'Lo sentimos! :(',
+									text: 'No se encontro ningun libro con alguna de esas keywords',
+									type: 'error',
+									closeOnConfirm: true
+								});
+							}
+						});
+						break;
+					default:
+						swal({
+							title: 'Error!',
+							text: 'Ocurrio un error con la busqueda. Elija su opcion de busqueda otra vez e intente de nuevo',
+							type: 'error',
+							closeOnConfirm: true
+						});
+						break;			
+				}
+			},
+			mounted(){
+				$('select').material_select();
+        
 			}
 		}
 	}
@@ -81,11 +208,16 @@
 	  vertical-align: middle;
 	}
 
+	.greenTest{
+		background-color: darkgreen !important;
+	}
+
 	.modal-container {
 		width: 45vw;
 		height: 45vh;
 		max-height: 60vh;
-		margin: 0px auto;
+		margin: 0 auto;
+
 		padding: 20px 30px;
 		background-color: #fff;
 		border-radius: 2px;
@@ -103,11 +235,17 @@
 
 	.modal-header h3 {
 	  margin-top: 0;
+	  margin-left: 25%;
 	  color: #42b983;
+	}
+
+	select{
+		display: inline;
 	}
 
 	.modal-body {
 	  margin: 20px 0;
+	  margin-left: 25px;
 	}
 
 	.modal-enter {
