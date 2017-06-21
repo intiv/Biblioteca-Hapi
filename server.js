@@ -29,7 +29,7 @@ server.register([inert, auth], function(err){
     password: 'sessionpassword',
     cookie: 'biblioteca-hapi-cookie',
     ttl: 3 * 60 * 60 * 1000, // Set session to 3 hours
-    isSecure: false
+    isSecure: true
   });
 	server.route(routes.endpoints);
 
