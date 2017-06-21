@@ -23,18 +23,11 @@ exports.createUser = {
 
 exports.login = {
   auth: false,
-  validate: {
-    payload: {
-      username: joi.string().required(),
-      password: joi.string().min(2).max(200).required()
-    }
-  },
   handler: function(request, reply) {
     var password = String(SHA3(request.payload.password));
     user.find({username: request.payload.username, password: password}, function(err, User){
       if(!err && User){
         if(User.length > 0){
-          console.log(User[0]);
           request.cookieAuth.set(User[0]);
           return reply({username: User[0].username, scope: User[0].scope, success: true, message: 'Login hecho exitosamente'});
         }else{
