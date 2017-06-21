@@ -3,6 +3,8 @@ var SHA3 = require('crypto-js/sha3');
 var boom = require('boom');
 var joi = require('joi');
 
+
+
 exports.createUser = {
 	auth : false,
 	handler : function(request, reply){
@@ -28,6 +30,7 @@ exports.login = {
     user.find({username: request.payload.username, password: password}, function(err, User){
       if(!err && User){
         if(User.length > 0){
+          console.log(JSON.stringify(User[0]));
           request.cookieAuth.set(User[0]);
           return reply({username: User[0].username, scope: User[0].scope, success: true, message: 'Login hecho exitosamente'});
         }else{

@@ -26,10 +26,10 @@ db.once('open', function callback() {
 server.register([inert, auth], function(err){
 
   server.auth.strategy('session', 'cookie', {
-    password: 'sessionpassword',
+    password: 'sessionpasswordasdaswdasgjhdfajshdhjdja',
     cookie: 'biblioteca-hapi-cookie',
     ttl: 3 * 60 * 60 * 1000, // Set session to 3 hours
-    isSecure: true
+    isSecure: false
   });
 	server.route(routes.endpoints);
 
